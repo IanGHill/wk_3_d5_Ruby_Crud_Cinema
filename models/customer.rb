@@ -44,6 +44,8 @@ class Customer
 
         self.update
         screening.update
+
+        Ticket.new('customer_id' => @id, 'screening_id' => screening.id, 'film_id' => film.id).save()
       else
         puts "No tickets left"
       end

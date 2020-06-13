@@ -41,15 +41,31 @@ class Film
    return SqlRunner.run(sql, values).first['count'].to_i
  end
 
- def most_popular_screening
+ def most_popular_screening_using_sql
    sql = "SELECT * FROM screenings
           WHERE film_id = $1
           ORDER BY tickets_sold DESC"
    values = [@id]
-   screening = SqlRunner.run(sql, values).first
+   screenings = SqlRunner.run(sql, values).first
 
-   if screening['tickets_sold'].to_i > 0
-     return screening['show_time']
+   if screenings['tickets_sold'].to_i > 0
+     return screenings['show_time']
+   else
+     return "No tickets sold for this film"
+   end
+ end
+
+ def most_popular_screening_using_sort
+   sql = "SELECT * FROM screenings
+          WHERE film_id = $1"
+   values = [@id]
+   screenings = SqlRunner.run(sql, values)
+
+   sorted_screenings_asc = screenings.sort_by {|item| item['tickets_sold'].to_i}
+   sorted_screenings_desc = sorted_screenings_asc.reverse
+
+   if sorted_screenings_desc[0]['tickets_sold'].to_i > 0
+     return sorted_screenings_desc[0]['show_time']
    else
      return "No tickets sold for this film"
    end
